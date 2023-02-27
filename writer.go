@@ -1,15 +1,18 @@
 package iptables
 
 import (
+	"fmt"
 	"strconv"
 )
+
+const testServiceName = "test/test"
 
 func OldWriter(n int) []byte {
 	rules := LineBuffer{}
 	for i := 0; i < n; i++ {
 		protocol := "udp"
 		rules.Write("-A", string(kubeExternalServicesChain),
-			"-m", "comment", "--comment", `"service has no endpoints"`,
+			"-m", "comment", "--comment", fmt.Sprintf(`"service %s has no endpoints"`, testServiceName),
 			"-m", "addrtype", "--dst-type", "LOCAL",
 			"-p", protocol,
 			"--dport", strconv.Itoa(32320),
@@ -33,7 +36,7 @@ func NewWriter(n int) []byte {
 
 		rule := rules.NewRule()
 		rule = rule.ForChain(kubeExternalServicesNewChain)
-		rule = rule.AddComment(`"service has no endpoints"`)
+		rule = rule.AddComment(fmt.Sprintf(`"service %s has no endpoints"`, testServiceName))
 		rule = rule.MatchAddrType(AddrTypeDestinationType, AddressTypeLocal)
 		rule = rule.MatchProtocol(ProtocolUDP)
 		rule = rule.MatchDestinationPort(32320)
