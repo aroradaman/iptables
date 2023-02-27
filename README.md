@@ -1,5 +1,14 @@
 #### Simple and Efficient interface for generating iptables rules.
-
+```
+rule := rules.NewRule()
+rule = rule.ForChain(kubeExternalServicesNewChain)
+rule = rule.AddComment(fmt.Sprintf(`"service %s has no endpoints"`, testServiceName))
+rule = rule.MatchAddrType(AddrTypeDestinationType, AddressTypeLocal)
+rule = rule.MatchProtocol(ProtocolUDP)
+rule = rule.MatchDestinationPort(32320)
+rule = rule.JumpTo(JumpTargetReject)
+rule.Add()
+```
 #### Benchmark
 Use `./compare.sh` to run benchmarking
 
